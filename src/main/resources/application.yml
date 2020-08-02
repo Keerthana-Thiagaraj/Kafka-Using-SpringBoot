@@ -1,0 +1,16 @@
+server:
+  port: 8091
+
+spring:
+  profiles:
+   active: local
+  kafka:
+    template:
+      default-topic: EmployeeEvent
+    producer:
+      bootstrap-servers: localhost:9092,localhost:9093,localhost:9094
+      key-serializer: org.apache.kafka.common.serialization.IntegerDeserializer
+      value-serializer: org.apache.kafka.common.serialization.StringDeserializer
+    admin:
+      properties:
+        bootstrap.servers: localhost:9092,localhost:9093,localhost:9094
