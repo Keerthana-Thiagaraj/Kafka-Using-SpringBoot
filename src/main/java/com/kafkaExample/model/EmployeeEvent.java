@@ -5,13 +5,17 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-@NoArgsConstructor
 @AllArgsConstructor
+@NoArgsConstructor
 @Data
 @Builder
 public class EmployeeEvent {
 
-    private Integer empEventId;
+    public Integer empEventId;
+
+    public Integer getEmpEventId() {
+        return empEventId;
+    }
 
     private String empEventName;
 

@@ -6,7 +6,7 @@ spring:
    active: local
   kafka:
     template:
-      default-topic: EmployeeEvent
+      default-topic: Employee-event
     producer:
       bootstrap-servers: localhost:9092,localhost:9093,localhost:9094
       key-serializer: org.apache.kafka.common.serialization.IntegerDeserializer
