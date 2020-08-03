@@ -1,5 +1,9 @@
 package com.kafkaExample.controller;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.kafkaExample.Producer.EmpEventProducer;
+import com.kafkaExample.model.EmployeeEvent;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -9,9 +13,13 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 public class Employee {
 
-    @PostMapping("/kafka/createEmployee")
-    public ResponseEntity<Employee> createEmployee(@RequestBody Employee employee) {
+    @Autowired
+    EmpEventProducer empEventProducer;
 
-        return ResponseEntity.status(HttpStatus.CREATED).body(employee);
+    @PostMapping("/kafka/createEmployee")
+    public ResponseEntity<EmployeeEvent> createEmployee(@RequestBody EmployeeEvent employeeEvent) throws JsonProcessingException {
+
+        empEventProducer.sendEmployeeEvent(employeeEvent); //Invoke kafka producer
+        return ResponseEntity.status(HttpStatus.CREATED).body(employeeEvent);
     }
 }

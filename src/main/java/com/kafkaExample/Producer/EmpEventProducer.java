@@ -55,7 +55,7 @@ public class EmpEventProducer {
     }
 
     private void handleSuccess(Integer key, String value, SendResult<Integer, String> result) {
-        log.info("message sent for the key, value,partion is", key, value, result.getRecordMetadata().partition());
+        log.info("message sent for the key,"+key+" value"+value+"partion is"+result.getRecordMetadata().partition());
     }
 
 }
