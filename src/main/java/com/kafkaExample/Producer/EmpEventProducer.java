@@ -13,6 +13,10 @@ import org.springframework.stereotype.Component;
 import org.springframework.util.concurrent.ListenableFuture;
 import org.springframework.util.concurrent.ListenableFutureCallback;
 
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
+
 
 @Component
 @Slf4j
@@ -45,6 +49,23 @@ public class EmpEventProducer {
 
     }
 
+    public SendResult<Integer, String> sendEmployeeEventSynchronous(EmployeeEvent employeeEvent) throws JsonProcessingException, ExecutionException, InterruptedException, TimeoutException {
+
+        Integer key = employeeEvent.getEmpEventId();
+        String value = objectMapper.writeValueAsString(employeeEvent);
+        SendResult<Integer, String> sendResult = null;
+        try {
+            sendResult = kafkaTemplate.sendDefault(key, value).get(1, TimeUnit.SECONDS);  // Timeout scenario when event is not returned
+        } catch (ExecutionException | InterruptedException e) {
+            log.error("ExecutionException while sending the message", e.getMessage());
+            throw e;
+        } catch (Exception e) {
+            log.error("Exception while sending the message", e.getMessage());
+            throw e;
+        }
+        return sendResult;
+    }
+
     private void handleFailure(Integer key, String value, Throwable e) {
         log.error("error while sending the message", e.getMessage());
         try {
@@ -55,7 +76,7 @@ public class EmpEventProducer {
     }
 
     private void handleSuccess(Integer key, String value, SendResult<Integer, String> result) {
-        log.info("message sent for the key,"+key+" value"+value+"partion is"+result.getRecordMetadata().partition());
+        log.info("message sent for the key," + key + " value" + value + "partion is" + result.getRecordMetadata().partition());
     }
 
 }
