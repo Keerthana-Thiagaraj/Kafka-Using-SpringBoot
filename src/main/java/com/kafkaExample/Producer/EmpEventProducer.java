@@ -6,6 +6,7 @@ import com.kafkaExample.model.EmployeeEvent;
 import lombok.extern.java.Log;
 import lombok.extern.log4j.Log4j;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.kafka.clients.producer.ProducerRecord;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.kafka.support.SendResult;
@@ -30,6 +31,9 @@ public class EmpEventProducer {
     @Autowired
     ObjectMapper objectMapper; //Convert java object to json
 
+    String kafkaTopic = "Employee-event";
+
+    //** Sending messages asynchronously irrespective of the events ( success or failure), endpoint response is returned **//
     public void sendEmployeeEvent(EmployeeEvent employeeEvent) throws JsonProcessingException {
 
         Integer key = employeeEvent.getEmpEventId();
@@ -49,6 +53,38 @@ public class EmpEventProducer {
 
     }
 
+
+    //** Sending messages by constructing producer record method which is available in kafka. - Method 2**//
+    public void sendEmployeeEventUsingProducerRecord(EmployeeEvent employeeEvent) throws JsonProcessingException {
+
+        Integer key = employeeEvent.getEmpEventId();
+        String value = objectMapper.writeValueAsString(employeeEvent);
+
+
+        ProducerRecord<Integer, String> producerRecord = createProducerRecord(key, value, kafkaTopic);
+//        ListenableFuture<SendResult<Integer, String>> listenableFuture = kafkaTemplate.send(kafkaTopic, key, value); // sendDefault is of type Listenable future
+        ListenableFuture<SendResult<Integer, String>> listenableFuture = kafkaTemplate.send(producerRecord); // changed overloaded method of send
+
+        listenableFuture.addCallback(new ListenableFutureCallback<SendResult<Integer, String>>() { // Call back is of success and failure types
+            @Override
+            public void onFailure(Throwable e) {
+                handleFailure(key, value, e);
+            }
+
+            @Override
+            public void onSuccess(SendResult<Integer, String> result) { // Published message is successful
+                handleSuccess(key, value, result);
+            }
+        });
+
+    }
+
+    private ProducerRecord<Integer, String> createProducerRecord(Integer key, String value, String kafkaTopic) {
+
+        return new ProducerRecord<>(kafkaTopic, null, key, value, null);
+    }
+
+    // **Sending messages synchronously. When there is a need to publish message and then return the response**//
     public SendResult<Integer, String> sendEmployeeEventSynchronous(EmployeeEvent employeeEvent) throws JsonProcessingException, ExecutionException, InterruptedException, TimeoutException {
 
         Integer key = employeeEvent.getEmpEventId();

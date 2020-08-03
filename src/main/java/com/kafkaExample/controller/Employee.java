@@ -30,9 +30,10 @@ public class Employee {
         log.info("before emp event");
 //        empEventProducer.sendEmployeeEvent(employeeEvent); //Invoke kafka producer asynchronously
 
-        empEventProducer.sendEmployeeEventSynchronous(employeeEvent); //Invoke kafka producer synchronously - message to be published
+//        empEventProducer.sendEmployeeEventSynchronous(employeeEvent); //Invoke kafka producer synchronously - message to be published
         // successfully and then return the response
 
+        empEventProducer.sendEmployeeEventUsingProducerRecord(employeeEvent); // Invoke kafka by using kafka producer
         log.info("after emp event");
 
         return ResponseEntity.status(HttpStatus.CREATED).body(employeeEvent);
