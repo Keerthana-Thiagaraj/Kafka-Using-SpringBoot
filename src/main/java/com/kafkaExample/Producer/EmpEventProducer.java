@@ -7,6 +7,8 @@ import lombok.extern.java.Log;
 import lombok.extern.log4j.Log4j;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.clients.producer.ProducerRecord;
+import org.apache.kafka.common.header.Header;
+import org.apache.kafka.common.header.internals.RecordHeader;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.kafka.support.SendResult;
@@ -14,6 +16,8 @@ import org.springframework.stereotype.Component;
 import org.springframework.util.concurrent.ListenableFuture;
 import org.springframework.util.concurrent.ListenableFutureCallback;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
@@ -81,7 +85,11 @@ public class EmpEventProducer {
 
     private ProducerRecord<Integer, String> createProducerRecord(Integer key, String value, String kafkaTopic) {
 
-        return new ProducerRecord<>(kafkaTopic, null, key, value, null);
+
+        List<Header> listOfHeaders = new ArrayList();
+        listOfHeaders.add(new RecordHeader("event-source", "scanner".getBytes()));
+//                .of(new RecordHeader("event-source", "scanner".getBytes()));
+        return new ProducerRecord<>(kafkaTopic, null, key, value, listOfHeaders);
     }
 
     // **Sending messages synchronously. When there is a need to publish message and then return the response**//
