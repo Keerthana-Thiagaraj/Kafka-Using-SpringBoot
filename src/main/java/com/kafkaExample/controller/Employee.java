@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.kafkaExample.Producer.EmpEventProducer;
 import com.kafkaExample.model.EmployeeEvent;
 import lombok.extern.slf4j.Slf4j;
+import javax.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -22,7 +23,7 @@ public class Employee {
     EmpEventProducer empEventProducer;
 
     @PostMapping("/kafka/createEmployee")
-    public ResponseEntity<EmployeeEvent> createEmployee(@RequestBody EmployeeEvent employeeEvent) throws JsonProcessingException, ExecutionException, InterruptedException, TimeoutException {
+    public ResponseEntity<EmployeeEvent> createEmployee(@RequestBody @Valid EmployeeEvent employeeEvent) throws JsonProcessingException, ExecutionException, InterruptedException, TimeoutException {
 
         // Log statements added to check for asynchronous calls.
         // Irrespective of success or failure callbacks, Http status created is returned

@@ -34,7 +34,7 @@ public class EmployeeEventUnitTest {
     void postEmployeeEvent() throws Exception {
 
         EmployeeModel employeeModel = EmployeeModel.builder().empId(1).empName("Keerthana").empGender("Female").build();
-        EmployeeEvent employeeEvent = EmployeeEvent.builder().empEventId(null).employeeModel(employeeModel).build();
+        EmployeeEvent employeeEvent = EmployeeEvent.builder().empEventId(null).employeeModel(new EmployeeModel()).build();
 
         String json = objectMapper.writeValueAsString(employeeEvent);
 
